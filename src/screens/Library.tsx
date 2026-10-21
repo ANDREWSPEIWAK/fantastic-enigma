@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useProgressStore } from '../store';
 import { libraryTopics, libraryItems } from '../data/library';
-import { Pill, SectionHead, EmptyNote } from '../components/app-ui';
+import { EmptyNote } from '../components/app-ui';
 import { cn } from '../lib/utils';
 
 interface ChipProps {
@@ -15,10 +15,21 @@ function Chip({ label, active, onClick }: ChipProps) {
     <button
       type="button"
       onClick={onClick}
-      className={cn(
-        'px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors',
-        active ? 'bg-[#FBC85F] border-[#FBC85F] text-[#121212]' : 'border-[#3a3a3a] bg-[#1a1a1a] text-[#E8E6E1] hover:border-[#FBC85F]',
-      )}
+      style={{
+        height: 44,
+        boxSizing: 'border-box',
+        padding: '0 20px',
+        borderRadius: 22,
+        background: active ? '#C9DB8A' : 'transparent',
+        color: active ? '#121212' : '#E8E6E1',
+        fontWeight: 700,
+        fontSize: 14,
+        display: 'inline-flex',
+        alignItems: 'center',
+        border: active ? '0' : '1px solid #444',
+        cursor: 'pointer',
+        whiteSpace: 'nowrap',
+      }}
     >
       {label}
     </button>
@@ -97,18 +108,26 @@ function ItemModal({ item, onClose, onRead }: ItemModalProps) {
   );
 }
 
+const CARD_COLORS = ['#FBC85F', '#5B45F0'];
+
 const Library: React.FC = () => {
   const store = useProgressStore();
   const { lessonsRead, readLesson, dayOpened } = store;
 
   const [topicId, setTopicId] = useState<string>('all');
+  const [query, setQuery] = useState<string>('');
   const [modalItem, setModalItem] = useState<typeof libraryItems[number] | null>(null);
 
   useEffect(() => {
     dayOpened();
   }, [dayOpened]);
 
-  const filtered = useMemo(() => (topicId === 'all' ? libraryItems : libraryItems.filter((i) => i.topicId === topicId)), [topicId]);
+  const filtered = useMemo(() => {
+    let items = topicId === 'all' ? libraryItems : libraryItems.filter((i) => i.topicId === topicId);
+    const q = query.trim().toLowerCase();
+    if (q) items = items.filter((i) => (i.title + ' ' + i.summary).toLowerCase().includes(q));
+    return items;
+  }, [topicId, query]);
 
   const openModal = useCallback((item: typeof libraryItems[number]) => setModalItem(item), []);
   const closeModal = useCallback(() => setModalItem(null), []);
@@ -118,44 +137,70 @@ const Library: React.FC = () => {
   }, [readLesson, closeModal]);
 
   return (
-    <div className="bg-[#121212] min-h-screen text-[#E8E6E1] font-body anim-rise">
-      <SectionHead kicker="Методики и видео" title="Библиотека" />
-      <div className="mx-auto max-w-5xl px-4 py-10">
-        <div className="flex flex-wrap gap-2 mb-8">
+    <div className="bg-[#121212] min-h-screen text-[#E8E6E1] font-body anim-rise" style={{ padding: 0 }}>
+      <div style={{ padding: 20 }}>
+        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#C9DB8A' }}>МЕТОДИКИ И ВИДЕО</div>
+        <h1 style={{ margin: '2px 0 0', fontFamily: "'Unbounded', Manrope, sans-serif", fontWeight: 800, fontSize: 28, lineHeight: 1.15, color: '#E8E6E1' }}>
+          БИБЛИОТЕКА
+        </h1>
+      </div>
+
+      <div style={{ padding: '0 20px' }}>
+        <div style={{ display: 'flex', gap: 10, marginTop: 16 }}>
+          <div style={{ flex: 1, height: 48, borderRadius: 24, background: '#E8E6E1', color: '#555', display: 'flex', alignItems: 'center', gap: 10, padding: '0 18px', fontSize: 14 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#121212" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7" /><path d="M20 20l-4-4" /></svg>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Найти методику"
+              style={{ border: 0, background: 'transparent', outline: 'none', flex: 1, color: '#555', fontSize: 14, fontFamily: 'inherit' }}
+            />
+          </div>
+          <button aria-label="Фильтры" style={{ width: 48, height: 48, borderRadius: 24, border: 0, background: '#5B45F0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 8h10M18 8h2M4 16h2M10 16h10" /><circle cx="16" cy="8" r="2" /><circle cx="8" cy="16" r="2" /></svg>
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', gap: 8, margin: '14px -20px 0', padding: '0 20px', overflowX: 'auto', whiteSpace: 'nowrap' }}>
           <Chip label="Все" active={topicId === 'all'} onClick={() => setTopicId('all')} />
           {libraryTopics.map((t) => (
             <Chip key={t.id} label={t.title} active={topicId === t.id} onClick={() => setTopicId(t.id)} />
           ))}
         </div>
+
         {filtered.length === 0 ? (
           <EmptyNote>Нет материалов по выбранной теме</EmptyNote>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div style={{ marginTop: 14 }}>
             {filtered.map((item, i) => {
               const topic = libraryTopics.find((t) => t.id === item.topicId);
               const done = !!lessonsRead[item.id];
+              const color = CARD_COLORS[i % CARD_COLORS.length];
+              const textColor = color === '#FBC85F' ? '#121212' : '#fff';
+              const badgeBg = color === '#FBC85F' ? '#121212' : '#fff';
+              const badgeText = color === '#FBC85F' ? '#FBC85F' : '#5B45F0';
+              const youtubeBg = color === '#FBC85F' ? '#121212' : '#fff';
+              const youtubeText = color === '#FBC85F' ? '#fff' : '#5B45F0';
               return (
-                <div
-                  key={item.id}
-                  className={cn('anim-rise rounded-xl border p-4 flex flex-col transition-all', done ? 'border-[#FBC85F] bg-[#1a1a1a]/60' : 'border-[#3a3a3a] bg-[#1a1a1a]/60')}
-                  style={{ animationDelay: `${i * 60}ms` }}
-                >
-                  <div className="mb-2">
-                    <p className="text-xs text-[#555] uppercase tracking-wider">{topic?.title ?? item.topicId}</p>
-                    <h3 className="text-base font-bold text-[#E8E6E1]">{item.title}</h3>
+                <div key={item.id} className="press" style={{ marginTop: i === 0 ? 0 : 12, borderRadius: 32, background: color, color: textColor, padding: 20 }}>
+                  <span style={{ display: 'inline-block', padding: '4px 12px', borderRadius: 12, background: badgeBg, color: badgeText, fontSize: 12, fontWeight: 700, letterSpacing: 1 }}>
+                    {(topic?.title ?? item.topicId).toUpperCase()}
+                  </span>
+                  <div style={{ fontFamily: "'Unbounded', Manrope, sans-serif", fontWeight: 800, fontSize: 25, lineHeight: 1.15, marginTop: 12 }}>
+                    {item.title.toUpperCase()}
                   </div>
-                  <p className="mb-3 text-sm text-[#C9C0A6]/80">{item.summary}</p>
-                  <div className="mt-auto flex flex-wrap gap-2">
-                    {item.youtube && <Pill color="#FBC85F" className="shrink-0">▶ youtube</Pill>}
-                    <Pill color={done ? '#FBC85F' : '#3a3a3a'} className="shrink-0">{done ? '✓ прочитано' : 'прочесть'}</Pill>
-                    <span className="ml-auto text-xs text-[#555]">{item.duration}</span>
+                  <p style={{ margin: '8px 0 0', fontSize: 14, lineHeight: 1.4, fontWeight: 500 }}>{item.summary}</p>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 12, fontSize: 13, fontWeight: 700 }}>
+                    {item.youtube && <span style={{ padding: '5px 12px', borderRadius: 14, background: youtubeBg, color: youtubeText }}>youtube</span>}
+                    <span style={{ padding: '5px 12px', borderRadius: 14, border: `1.5px solid ${textColor}` }}>{done ? 'прочитано' : 'прочесть'}</span>
+                    <span style={{ marginLeft: 'auto', fontFamily: "'Unbounded', Manrope, sans-serif", fontSize: 15, fontWeight: 800 }}>{item.duration.toUpperCase()}</span>
                   </div>
                   <button
                     type="button"
                     onClick={() => openModal(item)}
-                    className="mt-3 w-full py-2 rounded-xl border border-[#3a3a3a] bg-[#1a1a1a] text-[#E8E6E1] text-sm font-semibold hover:border-[#FBC85F]"
+                    style={{ marginTop: 14, width: '100%', height: 52, border: 0, borderRadius: 26, background: '#121212', color: '#fff', fontFamily: 'Manrope, sans-serif', fontWeight: 700, fontSize: 15, letterSpacing: 0.5, cursor: 'pointer' }}
                   >
-                    Открыть методику
+                    ОТКРЫТЬ МЕТОДИКУ
                   </button>
                 </div>
               );
@@ -163,6 +208,7 @@ const Library: React.FC = () => {
           </div>
         )}
       </div>
+
       {modalItem && (
         <ItemModal item={modalItem} onClose={closeModal} onRead={handleRead} />
       )}

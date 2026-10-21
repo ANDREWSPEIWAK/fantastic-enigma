@@ -54,7 +54,7 @@
 /* Variants */
 .primary {
   background: var(--aqua);
-  color: #ffffff;
+  color: #121212;
 }
 
 .primary:hover:not(:disabled) {

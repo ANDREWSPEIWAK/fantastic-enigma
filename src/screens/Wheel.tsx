@@ -1,8 +1,16 @@
 import React, { useState } from 'react';
 import { wheelCategories, wheelColors } from '../data/wheel';
-import { SectionHead, Pill } from '../components/app-ui';
 
 const colorFor = (index: number): string => wheelColors[index % wheelColors.length];
+
+const textColorFor = (color: string): string => {
+  return color === '#E8E6E1' || color === '#FBC85F' || color === '#C9DB8A' ? '#121212' : '#fff';
+};
+
+const NOTE_COLORS = ['#FBC85F', '#4F3F7F', '#EE5A55', '#121212'];
+
+const noteTextColorFor = (color: string): string =>
+  color === '#FBC85F' || color === '#C9DB8A' || color === '#E8E6E1' || color === '#EE5A55' ? '#121212' : '#fff';
 
 const Wheel: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -10,68 +18,73 @@ const Wheel: React.FC = () => {
   const cat = activeIndex >= 0 ? wheelCategories[activeIndex] : undefined;
 
   return (
-    <div className="bg-[#121212] text-[#E8E6E1] min-h-screen p-6">
-      <SectionHead kicker="Вкусовое колесо" title="Ароматика кофе" />
-
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+    <div style={{ background: '#121212', color: '#E8E6E1', minHeight: '100vh', padding: 20, fontFamily: 'Manrope, sans-serif' }}>
+      <h1 style={{ margin: '20px 0 0', fontFamily: "'Unbounded', Manrope, sans-serif", fontWeight: 800, fontSize: 28, lineHeight: 1.15, color: '#E8E6E1' }}>
+        ВКУСЫ
+      </h1>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginTop: 16 }}>
         {wheelCategories.map((category, i) => {
           const color = colorFor(i);
           const active = activeId === category.id;
-          const style: React.CSSProperties = {
-            borderColor: color,
-            backgroundColor: active ? `${color}20` : '#1a1a1a',
-            color: active ? color : '#C9C0A6',
-            ...(active ? { boxShadow: `0 0 14px ${color}50` } : {}),
-          };
+          const textColor = textColorFor(color);
           return (
             <button
               key={category.id}
+              type="button"
               onClick={() => setActiveId(active ? null : category.id)}
-              style={style}
-              className="flex flex-col items-center gap-2 px-3 py-4 rounded-xl border transition-all duration-200 anim-pop focus:outline-none"
+              style={{
+                height: 84,
+                boxSizing: 'border-box',
+                borderRadius: 28,
+                background: color,
+                color: textColor,
+                padding: '12px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                border: 0,
+                cursor: 'pointer',
+                boxShadow: active ? 'inset -5px -5px 10px rgba(0,0,0,.7)' : undefined,
+              }}
             >
-              <span className="text-[10px] font-bold opacity-60">{i + 1}</span>
-              <div className="w-5 h-5 rounded-full" style={{ backgroundColor: color }} />
-              <span className="text-xs font-bold leading-tight text-center">{category.short}</span>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>{i + 1}</span>
+              <span style={{ fontFamily: "'Unbounded', Manrope, sans-serif", fontWeight: 800, fontSize: 15, lineHeight: 1.15 }}>
+                {category.short.toUpperCase()}
+              </span>
             </button>
           );
         })}
       </div>
 
       {cat ? (
-        <div className="mt-8 bg-[#1a1a1a] border border-[#3a3a3a] rounded-xl p-5 anim-rise">
-          <div className="mb-4">
-            <div className="text-xs font-bold text-[#FBC85F] uppercase tracking-wider mb-2">Нота вкуса</div>
-            <div className="flex flex-wrap gap-2">
-              {cat.notes.map((note, i) => (
-                <Pill key={note} color={colorFor(i)}>
+        <div style={{ marginTop: 18, borderRadius: 32, background: '#E8E6E1', color: '#121212', padding: 20 }}>
+          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#5B45F0' }}>НОТА ВКУСА</div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8, fontSize: 13, fontWeight: 700 }}>
+            {cat.notes.map((note, i) => {
+              const c = NOTE_COLORS[i % NOTE_COLORS.length];
+              return (
+                <span key={note} style={{ padding: '6px 12px', borderRadius: 16, background: c, color: noteTextColorFor(c) }}>
                   {note}
-                </Pill>
-              ))}
-            </div>
+                </span>
+              );
+            })}
           </div>
-
-          <div className="mb-4">
-            <div className="text-xs font-bold text-[#FBC85F] uppercase tracking-wider mb-2">Регионы</div>
-            <div className="flex flex-wrap gap-2">
-              {cat.regions.map((region, i) => (
-                <div key={region.name} className="flex items-center gap-2">
-                  <Pill color={colorFor(i + 4)}>{region.name}</Pill>
-                  <span className="text-xs text-[#C9C0A6]">{region.why}</span>
-                </div>
-              ))}
-            </div>
+          <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#5B45F0' }}>РЕГИОНЫ</div>
+          <div style={{ marginTop: 6, fontSize: 14, lineHeight: 1.5 }}>
+            {cat.regions.map((region, i) => (
+              <React.Fragment key={region.name}>
+                {i > 0 && <br />}
+                <b>{region.name}</b> — {region.why}
+              </React.Fragment>
+            ))}
           </div>
-
-          <div className="pt-4 border-t border-[#3a3a3a]">
-            <div className="text-xs font-bold text-[#EE5A55] uppercase tracking-wider mb-1">Как продавать</div>
-            <p className="text-sm text-[#C9C0A6] leading-relaxed">
-              Подчеркните ноту <span className="text-[#E8E6E1] font-bold">{cat.notes[0]}</span> — яркая черта профиля, которая цепляет гостя.
-            </p>
-          </div>
+          <div style={{ marginTop: 14, fontSize: 12, fontWeight: 700, letterSpacing: 2, color: '#B8332E' }}>КАК ПРОДАВАТЬ</div>
+          <p style={{ margin: '6px 0 0', fontSize: 14, lineHeight: 1.4 }}>
+            Подчеркните ноту <b>{cat.notes[0]}</b> — яркая черта профиля, которая цепляет гостя.
+          </p>
         </div>
       ) : (
-        <div className="mt-8 text-center text-[#C9C0A6] text-sm anim-pop">
+        <div style={{ marginTop: 18, textAlign: 'center', color: '#C9C0A6', fontSize: 14 }}>
           Выберите категорию, чтобы увидеть ноты, регионы и совет по продажам
         </div>
       )}

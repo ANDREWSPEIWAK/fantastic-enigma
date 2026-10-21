@@ -11,7 +11,7 @@ export interface WheelCategory {
   regions: { name: string; why: string }[];
 }
 
-export const wheelColors = ['#EE5A55', '#FBC85F', '#EE5A55', '#E8E6E1'];
+export const wheelColors = ['#EE5A55', '#FBC85F', '#C9DB8A', '#E8E6E1', '#5B45F0', '#4F3F7F', '#EE5A55', '#FBC85F'];
 
 export const wheelCategories: WheelCategory[] = [
   {

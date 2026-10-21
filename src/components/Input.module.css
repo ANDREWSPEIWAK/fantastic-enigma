@@ -1,0 +1,77 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: var(--surface);
+  color: var(--ink);
+  transition: all 0.2s ease;
+  font-family: inherit;
+  -webkit-font-smoothing: antialiased;
+}
+
+.input.withIcon {
+  padding-left: 2.5rem;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--aqua);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.input.error {
+  border-color: var(--heat);
+}
+
+.input.error:focus {
+  box-shadow: 0 0 0 3px var(--heat-soft);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.icon {
+  position: absolute;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ink-soft);
+  pointer-events: none;
+}
+
+.errorText {
+  font-size: 0.75rem;
+  color: var(--heat);
+  font-weight: 500;
+}
+
+.helperText {
+  font-size: 0.75rem;
+  color: var(--ink-soft);
+}

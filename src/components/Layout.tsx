@@ -21,13 +21,14 @@ export type NavSection =
   | 'training'
   | 'journal'
   | 'certification'
-  | 'academy';
+  | 'academy'
+  | 'ttk';
 
 export type TabId = 'path' | 'ttk' | 'tests' | 'shift' | 'discipline' | 'library' | 'wheel' | 'profile';
 
 const TAB_MAP: Record<TabId, NavSection[]> = {
   path: ['path', 'home', 'academy'],
-  ttk: ['library', 'trainer', 'practice'],
+  ttk: ['ttk'],
   tests: ['tests'],
   shift: ['shift'],
   discipline: ['discipline'],
@@ -131,7 +132,7 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
   return (
     <div className="bg-[#121212] text-[#E8E6E1] h-screen flex flex-col lg:flex-row overflow-auto">
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:w-60 flex-col border-r border-[#3a3a3a] bg-[#121212]/95 backdrop-blur h-screen overflow-y-auto">
+      <aside className="hidden flex-col border-r border-[#3a3a3a] bg-[#121212]/95 backdrop-blur h-screen overflow-y-auto">
         <div className="p-6 flex flex-col gap-6">
           <div className="flex items-center gap-3">
             <BrandLogo size={44} />
@@ -168,7 +169,7 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
       </aside>
 
       {/* Mobile header */}
-      <header className="lg:hidden sticky top-0 z-40 bg-[#121212]/90 backdrop-blur-md border-b border-[#3a3a3a]">
+      <header className="sticky top-0 z-40 bg-[#121212]/90 backdrop-blur-md border-b border-[#3a3a3a]">
         <div className="flex items-center justify-between px-4 py-3.5">
           <div className="flex items-center gap-3">
             <BrandLogo size={38} />
@@ -184,12 +185,12 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
         </div>
       </header>
 
-      <main className="flex-1 pb-20 lg:pb-0 overflow-y-auto">
+      <main className="flex-1 pb-20 overflow-y-auto">
         {children}
       </main>
 
       {/* Mobile bottom nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#121212]/90 backdrop-blur-md border-t border-[#3a3a3a]">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#121212]/90 backdrop-blur-md border-t border-[#3a3a3a]">
         <div className="grid grid-cols-8 px-2 py-3">
           {TABS.map((tab) => {
             const active = activeTab === tab.id;

@@ -13,6 +13,7 @@ import Wheel from './screens/Wheel';
 import Admin from './screens/Admin';
 import Skills from './screens/Skills';
 import Training from './screens/Training';
+import Ttk from './screens/Ttk';
 import Journal from './screens/Journal';
 import Certification from './screens/Certification';
 import Academy from './screens/Academy';
@@ -37,6 +38,7 @@ const SCREENS: Record<NavSection, React.ComponentType<any>> = {
   journal: Journal,
   certification: Certification,
   academy: Academy,
+  ttk: Ttk,
 };
 
 

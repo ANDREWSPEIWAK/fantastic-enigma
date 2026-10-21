@@ -1,6 +1,5 @@
 import React from 'react';
 import { cn } from '../lib/utils';
-import { useAuthStore } from '../store/authStore';
 import BrandLogo from './BrandLogo';
 import { ProgressRing } from './app-ui';
 
@@ -46,6 +45,15 @@ const TABS: { id: TabId; label: string; sections: NavSection[] }[] = [
   { id: 'library', label: 'Методики', sections: TAB_MAP.library },
   { id: 'wheel', label: 'Вкусы', sections: TAB_MAP.wheel },
   { id: 'profile', label: 'Профиль', sections: TAB_MAP.profile },
+];
+
+
+const BOTTOM_TABS: { id: TabId; label: string; section: NavSection }[] = [
+  { id: 'path', label: 'Путь', section: 'path' },
+  { id: 'ttk', label: 'ТТК', section: 'ttk' },
+  { id: 'tests', label: 'Тесты', section: 'tests' },
+  { id: 'library', label: 'Методики', section: 'library' },
+  { id: 'wheel', label: 'Вкусы', section: 'wheel' },
 ];
 
 function sectionToTab(section: NavSection): TabId {
@@ -112,7 +120,6 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) => {
-  const user = useAuthStore((s) => s.user);
   const activeTab = sectionToTab(activeSection);
 
   const sidebarButton = (active: boolean) =>
@@ -121,12 +128,6 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
       active
         ? 'bg-[#FBC85F] text-[#000000] shadow-[0_0_20px_rgba(251,200,95,0.35)]'
         : 'text-[#C9C0A6] hover:bg-[#222222] hover:border-[#3a3a3a] border-transparent'
-    );
-
-  const mobileButton = (active: boolean) =>
-    cn(
-      'flex flex-col items-center justify-center gap-1 px-2 py-2 text-xs transition-colors',
-      active ? 'text-[#FBC85F]' : 'text-[#555] hover:text-[#C9C0A6]'
     );
 
   return (
@@ -171,17 +172,15 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
       {/* Mobile header */}
       <header className="sticky top-0 z-40 bg-[#121212]/90 backdrop-blur-md border-b border-[#3a3a3a]">
         <div className="flex items-center justify-between px-4 py-3.5">
-          <div className="flex items-center gap-3">
-            <BrandLogo size={38} />
-            <span className="font-display text-lg font-bold tracking-tighter">
-              <span className="text-[#EE5A55]">202</span><span className="text-[#FBC85F]">f Academy</span>
-            </span>
+          <button type="button" aria-label="Меню" onClick={() => onNavigate('more')} style={{ width: 44, height: 44, borderRadius: 22, border: '1px solid #3a3a3a', background: '#1e1e1e', color: '#E8E6E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" /></svg>
+          </button>
+          <div className="font-display font-extrabold text-[17px] tracking-normal">
+            <span className="text-[#FBC85F]">202F</span> ACADEMY
           </div>
-          {user && (
-            <span className="px-2 py-1 rounded-full bg-[#222222] text-[10px] font-medium border border-[#3a3a3a]">
-              {user.name}
-            </span>
-          )}
+          <button type="button" aria-label="Профиль" onClick={() => onNavigate('profile')} style={{ width: 44, height: 44, borderRadius: 22, border: 0, background: '#5B45F0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+          </button>
         </div>
       </header>
 
@@ -189,20 +188,32 @@ const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) 
         {children}
       </main>
 
-      {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[#121212]/90 backdrop-blur-md border-t border-[#3a3a3a]">
-        <div className="grid grid-cols-8 px-2 py-3">
-          {TABS.map((tab) => {
+      {/* Bottom nav (floating pill) */}
+      <nav aria-label="Основная навигация" className="fixed bottom-0 left-0 right-0 z-50 px-5 pb-5 pointer-events-none">
+        <div className="mx-auto max-w-md pointer-events-auto" style={{ height: 68, borderRadius: 34, background: '#E8E6E1', display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 8px', boxShadow: '0 8px 24px rgba(0,0,0,.5)' }}>
+          {BOTTOM_TABS.map((tab) => {
             const active = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => onNavigate(tab.sections[0])}
-                className={mobileButton(active)}
+                aria-label={tab.label}
+                aria-current={active ? 'page' : undefined}
+                onClick={() => onNavigate(tab.section)}
+                style={{
+                  width: 52,
+                  height: 52,
+                  borderRadius: 26,
+                  border: 0,
+                  background: active ? '#121212' : 'transparent',
+                  color: active ? '#C9DB8A' : '#121212',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
               >
                 {ICONS[tab.id]}
-                <span className={active ? 'font-bold' : ''}>{tab.label}</span>
               </button>
             );
           })}

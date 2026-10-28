@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
@@ -8,36 +7,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        iron: {
-          deep: '#121212',
-          DEFAULT: '#1a1a1a',
-          card: '#222222',
-        },
-        aqua: '#FBC85F',
-        rust: '#EE5A55',
-        heat: '#EE5A55',
-        cream: '#E8E6E1',
-        muted: '#C9C0A6',
-        faint: '#555',
-        border: '#3a3a3a',
-        surface: '#1a1a1a',
-        purple: '#5B45F0',
-        green: '#C9DB8A',
-        'dark-purple': '#4F3F7F',
-        gold: '#FBC85F',
+        bg: '#0F0F10',
+        'surface-dark': '#1B1B1D',
+        'border-dark-1': '#2A2A2D',
+        'border-dark-2': '#3A3A3D',
+        'light-card': '#E8E6DF',
+        'divider-on-light': '#CFCCC4',
+        ink: '#111111',
+        'muted-on-light': '#555555',
+        text: '#FFFFFF',
+        lime: '#C9D98A',
+        violet: '#5B3FF0',
+        yellow: '#FDC55E',
+        coral: '#EB5A52',
+        plum: '#523E80',
       },
       borderRadius: {
-        xl: '32px',
-        '2xl': '28px',
-        full: '9999px',
+        '32': '32px',
+        '28': '28px',
+        '24': '24px',
+        '22': '22px',
+        '20': '20px',
+        '14': '14px',
+        'pill': '14px',
       },
       fontFamily: {
         display: ['"Unbounded"', 'sans-serif'],
         body: ['"Manrope"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         mono: ['"Space Mono"', 'ui-monospace', '"SF Mono"', 'monospace'],
       },
-      fontSize: {
-        'tnum': ['0.875rem', { fontVariationSettings: '"tnum" on' }],
+      spacing: {
+        '18': '72px',
       },
     },
   },

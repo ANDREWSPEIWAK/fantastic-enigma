@@ -41,7 +41,6 @@ const SCREENS: Record<NavSection, React.ComponentType<any>> = {
   ttk: Ttk,
 };
 
-
 export default function App() {
   const [activeSection, setActiveSection] = useState<NavSection>('path');
   const [openTaskId, setOpenTaskId] = useState<string | null>(null);
@@ -50,7 +49,18 @@ export default function App() {
 
   return (
     <Layout activeSection={activeSection} onNavigate={setActiveSection}>
-      {Screen && (activeSection === "more" ? <Screen onNavigate={setActiveSection} /> : activeSection === "home" ? <Screen onNavigate={setActiveSection} onOpenStep={(id:string)=>{ setOpenTaskId(id); setActiveSection("training"); }} /> : activeSection === "skills" ? <Screen onNavigate={setActiveSection} /> : activeSection === "training" ? <Screen initialTaskId={openTaskId} /> : <Screen />)}
+      {Screen &&
+        (activeSection === 'more' ? (
+          <Screen onNavigate={setActiveSection} />
+        ) : activeSection === 'home' ? (
+          <Screen onNavigate={setActiveSection} onOpenStep={(id: string) => { setOpenTaskId(id); setActiveSection('training'); }} />
+        ) : activeSection === 'skills' ? (
+          <Screen onNavigate={setActiveSection} />
+        ) : activeSection === 'training' ? (
+          <Screen initialTaskId={openTaskId} />
+        ) : (
+          <Screen />
+        ))}
     </Layout>
   );
 }

@@ -1,239 +1,64 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { useProgressStore } from '../store';
-import { ranks, badges, rankFor, badgeFor } from '../data/gamification';
-import { ProgressRing, Bar, Pill, SectionHead, EmptyNote } from '../components/app-ui';
+import { Eyebrow, H1, CardLight, Pill, Tile } from '../components/ui-new';
 
-const BG = '#121212';
-const CARD = '#1a1a1a';
-const AQUA = '#FBC85F';
-const HEAT = '#EE5A55';
-const RUST = '#EE5A55';
-const CREAM = '#E8E6E1';
-const MUTED = '#C9C0A6';
-const LINE = '#2a2a2a';
-const INK = '#1a1a1a';
-
-const rankColor = (id: string): string => {
-  switch (id) {
-    case 'trainee': return AQUA;
-    case 'barista': return HEAT;
-    case 'senior': return RUST;
-    case 'head': return '#B8860B';
-    case 'legend': return '#9B59B6';
-    default: return CREAM;
-  }
-};
-
-const Panel = ({ children }: { children: React.ReactNode }) => (
-  <section className="anim-rise" style={{ background: CARD, border: `1px solid ${LINE}`, borderRadius: 16, padding: 20, marginBottom: 16 }}>
-    {children}
-  </section>
-);
-
-const StatCard = ({ label, value, color }: { label: string; value: string | number; color: string }) => (
-  <div className="anim-pop" style={{ background: INK, border: `1px solid ${LINE}`, borderRadius: 12, padding: 14 }}>
-    <p style={{ margin: '0 0 6px 0', fontSize: 11, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em', color: MUTED }}>{label}</p>
-    <p style={{ margin: 0, fontSize: 26, fontWeight: 800, color, letterSpacing: '-0.02em' }}>{value}</p>
-  </div>
-);
-
-const Profile: React.FC = () => {
-  const state = useProgressStore();
-  const { xp, streak, known, lessonsRead, examKnown, quizBest, blitzBest, rushBest, days, earnedBadges, quests, dayOpened, resetAll, claimCode, syncNow } = state;
-
-  const [deviceId, setDeviceId] = useState<string | null>(null);
-  const [copyOk, setCopyOk] = useState(false);
-  const [code, setCode] = useState('');
-  const [syncStatus, setSyncStatus] = useState<'idle' | 'ok' | 'err'>('idle');
-  const [syncMsg, setSyncMsg] = useState('');
-
-  const knownCount = Object.keys(known).length;
-  const examKnownCount = Object.keys(examKnown).length;
-  const lessonsCount = Object.keys(lessonsRead).length;
-  const daysCount = days.length;
-
-  const rank = rankFor(xp);
-  const nextRank = rank.next;
-  const pct = nextRank ? Math.round((rank.into / Math.max(1, rank.span)) * 100) : 100;
-  const xpToNext = nextRank ? Math.max(0, nextRank.xp - xp) : 0;
-
-  const computedEarned = new Set(badgeFor({
-    knownCount,
-    quizBest,
-    blitzBest,
-    streak: streak.count,
-    rushBest,
-    days: daysCount,
-    examKnownCount,
-    questsDoneToday: quests.items.filter((q) => q.done).length,
-    questsTotalToday: quests.items.length,
-    checklistsDoneToday: Object.values(state.checklistsDone).flat(),
-  }));
-
-  useEffect(() => {
-    dayOpened();
-    const stored = localStorage.getItem('202f:deviceId');
-    if (stored) {
-      setDeviceId(stored);
-    } else {
-      const id = `dev-${Math.random().toString(36).slice(2, 10)}`;
-      localStorage.setItem('202f:deviceId', id);
-      setDeviceId(id);
-    }
-  }, [dayOpened]);
-
-  const handleCopy = useCallback(() => {
-    if (!deviceId || !navigator.clipboard) return;
-    navigator.clipboard.writeText(deviceId).then(() => {
-      setCopyOk(true);
-      setTimeout(() => setCopyOk(false), 1500);
-    });
-  }, [deviceId]);
-
-  const handleClaim = useCallback(() => {
-    if (!code.trim()) return;
-    claimCode(code.trim());
-    setSyncMsg(`Код ${code.trim()} отправлен на привязку`);
-    setSyncStatus('ok');
-    setCode('');
-  }, [claimCode, code]);
-
-  const handleSync = useCallback(() => {
-    setSyncStatus('idle');
-    syncNow();
-    setSyncMsg('Синхронизация запрашивается…');
-    setTimeout(() => setSyncStatus('ok'), 900);
-  }, [syncNow]);
-
-  const handleReset = useCallback(() => {
-    if (window.confirm('Сбросить весь прогресс? Это действие необратимо.')) {
-      resetAll();
-      setSyncMsg('Прогресс сброшен');
-    }
-  }, [resetAll]);
-
-  const stats = [
-    { label: 'Стрик', value: streak.count, color: AQUA },
-    { label: 'ТТК', value: knownCount, color: HEAT },
-    { label: 'Экзамен', value: examKnownCount, color: RUST },
-    { label: 'Методики', value: lessonsCount, color: CREAM },
-    { label: 'Квиз', value: `${quizBest}%`, color: AQUA },
-    { label: 'Блиц', value: blitzBest, color: HEAT },
-    { label: 'Rush', value: rushBest, color: RUST },
-    { label: 'Дней', value: daysCount, color: CREAM },
-  ];
-
+export default function Profile(): JSX.Element {
   return (
-    <div style={{ background: BG, minHeight: '100vh', color: CREAM, padding: 24 }}>
-      <SectionHead kicker="Профиль" title="Профиль" sub="Ваш прогресс, ранг, бейджи и синхронизация устройств" />
+    <div className="pt-4 pb-4">
+      <Eyebrow>Прогресс и синхронизация</Eyebrow>
+      <H1>Профиль</H1>
 
-      <Panel>
-        <h2 style={{ margin: '0 0 12px 0', fontSize: 20, fontWeight: 800, color: CREAM }}>Ранг и XP</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
-          <ProgressRing value={pct} size={120} color={rankColor(rank.current.id)} />
-          <div style={{ flex: 1, minWidth: 200 }}>
-            <p style={{ margin: '0 0 4px 0', fontSize: 22, fontWeight: 800, color: CREAM }}>{rank.current.title}</p>
-            <p style={{ margin: '0 0 10px 0', fontSize: 13, color: MUTED }}>{rank.current.perk}</p>
-            <p style={{ margin: '0 0 8px 0', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: AQUA }}>XP: {xp.toLocaleString('ru-RU')}</p>
-            {nextRank ? (
-              <>
-                <p style={{ margin: '0 0 6px 0', fontSize: 12, color: MUTED }}>До следующего ранга: {xpToNext.toLocaleString('ru-RU')} XP</p>
-                <Bar value={pct} color={rankColor(rank.current.id)} h={8} />
-              </>
-            ) : (
-              <p style={{ margin: 0, fontSize: 12, color: AQUA, fontWeight: 700 }}>Максимальный ранг достигнут</p>
-            )}
-          </div>
+      <CardLight className="mt-4">
+        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, textTransform: 'uppercase', marginBottom: 8 }}>Ранги</div>
+        <div className="flex items-center justify-between mb-2">
+          <div style={{ fontWeight: 700 }}>Бариста</div>
+          <Pill dark>200 XP</Pill>
         </div>
-        <p style={{ margin: '14px 0 10px 0', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: MUTED }}>Все ранги</p>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 10 }}>
-          {ranks.map((r) => {
-            const done = xp >= r.xp;
-            return (
-              <div key={r.id} className="anim-pop" style={{ background: INK, border: `1px solid ${LINE}`, borderRadius: 10, padding: 10, opacity: done ? 1 : 0.5 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: 6 }}>
-                  <span style={{ fontWeight: 800, color: done ? CREAM : MUTED, fontSize: 13 }}>{r.title}</span>
-                  <Pill color={rankColor(r.id)}>{done ? 'Получен' : `${r.xp} XP`}</Pill>
-                </div>
-                <p style={{ margin: '0 0 8px 0', fontSize: 11, color: MUTED, lineHeight: 1.35 }}>{r.perk}</p>
-                <Bar value={done ? 100 : Math.min(100, Math.round((xp / Math.max(1, r.xp)) * 100))} color={rankColor(r.id)} h={5} />
-              </div>
-            );
-          })}
+        <div style={{ fontSize: 13, color: '#555555', marginBottom: 10 }}>Доступ к обучению</div>
+        <div className="flex items-center justify-between mb-2">
+          <div style={{ fontWeight: 700 }}>Шеф-бариста</div>
+          <Pill dark>1400 XP</Pill>
         </div>
-      </Panel>
+        <div style={{ fontSize: 13, color: '#555555' }}>Право проводить аттестацию</div>
+      </CardLight>
 
-      <Panel>
-        <SectionHead kicker="Статистика" title="Показатели смены" />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}>
-          {stats.map((s) => (
-            <StatCard key={s.label} label={s.label} value={s.value} color={s.color} />
-          ))}
-        </div>
-      </Panel>
+      <div className="mt-4 grid grid-cols-3 gap-3">
+        <Tile color="lime">Достижения</Tile>
+        <Tile color="yellow">Стрик</Tile>
+        <Tile color="violet">Рекорды</Tile>
+      </div>
 
-      <Panel>
-        <SectionHead kicker="Бейджи" title="Коллекция" sub={`Получено ${earnedBadges.length} из ${badges.length}`} />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 12 }}>
-          {badges.map((b) => {
-            const isEarned = computedEarned.has(b.id);
-            return (
-              <div key={b.id} className="anim-pop" style={{
-                background: INK, border: `1px solid ${LINE}`, borderRadius: 12, padding: 12,
-                opacity: isEarned ? 1 : 0.45, filter: isEarned ? 'none' : 'grayscale(1)',
-                transition: 'all 0.2s ease',
-              }}>
-                <div style={{ fontSize: 24, lineHeight: 1, marginBottom: 8 }} aria-hidden="true">{b.icon}</div>
-                <p style={{ margin: '0 0 4px 0', fontSize: 13, fontWeight: 800, color: CREAM }}>{b.title}</p>
-                <p style={{ margin: 0, fontSize: 10.5, color: MUTED, lineHeight: 1.35 }}>{b.desc}</p>
-              </div>
-            );
-          })}
+      <CardLight className="mt-4" style={{ background: '#1B1B1D', color: '#FFFFFF' }}>
+        <div className="flex items-center justify-between mb-2">
+          <div style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, textTransform: 'uppercase' }}>Синхронизация / Устройство</div>
+          <Pill>Готово</Pill>
         </div>
-        {badges.length === 0 && <EmptyNote>Бейджи пока не доступны</EmptyNote>}
-      </Panel>
-
-      <Panel>
-        <SectionHead kicker="Синхронизация" title="Устройство" sub="Привязка к аккаунту и обмен данными" />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12, flexWrap: 'wrap' }}>
-          <Pill color={syncStatus === 'ok' ? AQUA : syncStatus === 'err' ? RUST : AQUA}>
-            {syncStatus === 'ok' ? 'Синхронизировано' : syncStatus === 'err' ? 'Ошибка' : 'Готово'}
-          </Pill>
-          {deviceId && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: INK, border: `1px solid ${LINE}`, borderRadius: 8, padding: '6px 10px' }}>
-              <span style={{ fontSize: 11, fontFamily: 'monospace', color: CREAM, fontWeight: 700 }}>{deviceId}</span>
-              <button type="button" onClick={handleCopy} style={{ background: 'transparent', border: 'none', color: AQUA, cursor: 'pointer', padding: 4, borderRadius: 4, fontWeight: 700 }}>
-                {copyOk ? 'Скопировано' : 'Копировать ID'}
-              </button>
-            </div>
-          )}
-        </div>
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+        <div style={{ fontSize: 13, marginBottom: 8 }}>Device ID</div>
+        <div className="flex gap-2 mb-3">
           <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="claimCode"
-            style={{ background: INK, border: `1px solid ${LINE}`, borderRadius: 8, color: CREAM, padding: '8px 12px', flex: 1, minWidth: 140, fontSize: 13 }}
+            className="flex-1"
+            style={{ height: 44, borderRadius: 22, border: '1px solid #3A3A3D', background: '#0F0F10', color: '#FFFFFF', padding: '0 12px', fontSize: 13 }}
+            placeholder="ID устройства"
+            readOnly
           />
-          <button type="button" onClick={handleClaim} disabled={!code.trim()} style={{ background: AQUA, color: '#000', border: 'none', borderRadius: 8, padding: '8px 16px', fontWeight: 800, cursor: code.trim() ? 'pointer' : 'default', opacity: code.trim() ? 1 : 0.5 }}>
-            Загрузить
-          </button>
-          <button type="button" onClick={handleSync} style={{ background: '#2a2a2a', border: `1px solid ${LINE}`, borderRadius: 8, color: CREAM, padding: '8px 16px', fontWeight: 800, cursor: 'pointer' }}>
-            Синхронизировать
+          <button type="button" style={{ height: 44, borderRadius: 22, padding: '0 14px', background: '#E8E6DF', color: '#111111', fontWeight: 700, fontSize: 13 }}>
+            Копировать ID
           </button>
         </div>
-        {syncMsg && <p style={{ margin: 0, fontSize: 12, color: syncStatus === 'ok' ? AQUA : MUTED }}>{syncMsg}</p>}
-      </Panel>
-
-      <Panel>
-        <SectionHead kicker="Сброс" title="Удалить прогресс" sub="Необратимо удаляет XP, отметки, чек-листы и результаты" />
-        <button type="button" onClick={handleReset} style={{ background: RUST, color: '#fff', border: 'none', borderRadius: 8, padding: '10px 18px', fontWeight: 800, cursor: 'pointer' }}>
-          Сбросить всё
+        <input
+          className="w-full mb-3"
+          style={{ height: 44, borderRadius: 22, border: '1px solid #3A3A3D', background: '#0F0F10', color: '#FFFFFF', padding: '0 12px', fontSize: 13 }}
+          placeholder="claimCode"
+        />
+        <button type="button" style={{ width: '100%', height: 48, borderRadius: 24, background: '#FDC55E', color: '#111111', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase' }}>
+          Загрузить
         </button>
-      </Panel>
+        <button type="button" className="mt-3 w-full" style={{ height: 48, borderRadius: 24, background: '#1B1B1D', color: '#FFFFFF', border: '1px solid #3A3A3D', fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 13, textTransform: 'uppercase' }}>
+          Синхронизировать
+        </button>
+      </CardLight>
+
+      <button type="button" className="mt-4 w-full text-left" style={{ color: '#EB5A52', fontWeight: 700, fontSize: 13 }}>
+        Удалить прогресс
+      </button>
     </div>
   );
-};
-
-export default Profile;
+}

@@ -1,7 +1,4 @@
-import React from 'react';
-import { cn } from '../lib/utils';
-import BrandLogo from './BrandLogo';
-import { ProgressRing } from './app-ui';
+import React, { useState } from 'react';
 
 export type NavSection =
   | 'home'
@@ -23,202 +20,306 @@ export type NavSection =
   | 'academy'
   | 'ttk';
 
-export type TabId = 'path' | 'ttk' | 'tests' | 'shift' | 'discipline' | 'library' | 'wheel' | 'profile';
-
-const TAB_MAP: Record<TabId, NavSection[]> = {
-  path: ['path', 'home', 'academy'],
-  ttk: ['ttk'],
-  tests: ['tests'],
-  shift: ['shift'],
-  discipline: ['discipline'],
-  library: ['library'],
-  wheel: ['wheel'],
-  profile: ['profile', 'skills', 'journal', 'certification', 'admin', 'training', 'more'],
-};
-
-const TABS: { id: TabId; label: string; sections: NavSection[] }[] = [
-  { id: 'path', label: 'Путь', sections: TAB_MAP.path },
-  { id: 'ttk', label: 'ТТК', sections: TAB_MAP.ttk },
-  { id: 'tests', label: 'Тесты', sections: TAB_MAP.tests },
-  { id: 'shift', label: 'Смена', sections: TAB_MAP.shift },
-  { id: 'discipline', label: 'Дисциплина', sections: TAB_MAP.discipline },
-  { id: 'library', label: 'Методики', sections: TAB_MAP.library },
-  { id: 'wheel', label: 'Вкусы', sections: TAB_MAP.wheel },
-  { id: 'profile', label: 'Профиль', sections: TAB_MAP.profile },
-];
-
-
-const BOTTOM_TABS: { id: TabId; label: string; section: NavSection }[] = [
-  { id: 'path', label: 'Путь', section: 'path' },
-  { id: 'ttk', label: 'ТТК', section: 'ttk' },
-  { id: 'tests', label: 'Тесты', section: 'tests' },
-  { id: 'library', label: 'Методики', section: 'library' },
-  { id: 'wheel', label: 'Вкусы', section: 'wheel' },
-];
-
-function sectionToTab(section: NavSection): TabId {
-  for (const tab of TABS) {
-    if (tab.sections.includes(section)) return tab.id;
-  }
-  return 'path';
-}
-
-const ICONS: Record<TabId, React.ReactNode> = {
-  path: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 20h5v-5h5v-5h5V5" />
-    </svg>
-  ),
-  ttk: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="m8 12.5 2.5 2.5L16 9.5" />
-    </svg>
-  ),
-  tests: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26" />
-    </svg>
-  ),
-  shift: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 3" />
-    </svg>
-  ),
-  discipline: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-    </svg>
-  ),
-  library: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-    </svg>
-  ),
-  wheel: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2v20" />
-      <path d="M2 12h20" />
-    </svg>
-  ),
-  profile: (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
-      <circle cx="12" cy="7" r="4" />
-    </svg>
-  ),
-};
-
 interface LayoutProps {
   activeSection: NavSection;
   onNavigate: (section: NavSection) => void;
   children: React.ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) => {
-  const activeTab = sectionToTab(activeSection);
+const bottomNavItems = [
+  { id: 'path', section: 'path' as NavSection, label: 'Путь', icon: PathIcon },
+  { id: 'library', section: 'library' as NavSection, label: 'Методики', icon: BookIcon },
+  { id: 'tests', section: 'tests' as NavSection, label: 'Тесты', icon: CheckIcon },
+  { id: 'shift', section: 'shift' as NavSection, label: 'Смена', icon: ClockIcon },
+  { id: 'profile', section: 'profile' as NavSection, label: 'Профиль', icon: UserIcon },
+];
 
-  const sidebarButton = (active: boolean) =>
-    cn(
-      'w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium transition-all border',
-      active
-        ? 'bg-[#FBC85F] text-[#000000] shadow-[0_0_20px_rgba(251,200,95,0.35)]'
-        : 'text-[#C9C0A6] hover:bg-[#222222] hover:border-[#3a3a3a] border-transparent'
-    );
+function PathIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 20h5v-5h5v-5h5V5" />
+    </svg>
+  );
+}
+
+function BookIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+function ClockIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 3" />
+    </svg>
+  );
+}
+
+function UserIcon() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function MenuIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <path d="M4 7h16M4 12h16M4 17h16" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <path d="M18 6L6 18M6 6l12 12" />
+    </svg>
+  );
+}
+
+function ChevronRightIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
+function DisciplineIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M9 11.5 11 14l4-5" />
+      <rect x="4" y="4" width="16" height="16" rx="3" />
+    </svg>
+  );
+}
+
+function WheelIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3v18M3 12h18" />
+    </svg>
+  );
+}
+
+function RouteIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 20h5v-5h5v-5h5V5" />
+    </svg>
+  );
+}
+
+function LanguageIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h18M12 3a15 15 0 0 1 4 9 15 15 0 0 1-4 9 15 15 0 0 1-4-9 15 15 0 0 1 4-9" />
+    </svg>
+  );
+}
+
+function SettingsIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1" />
+    </svg>
+  );
+}
+
+const DRAWER_ITEMS = [
+  { id: 'discipline', section: 'discipline' as NavSection, label: 'Дисциплина', icon: DisciplineIcon },
+  { id: 'wheel', section: 'wheel' as NavSection, label: 'Вкусы', icon: WheelIcon },
+  { id: 'ttk', section: 'ttk' as NavSection, label: 'Техкарты', icon: RouteIcon },
+  { id: 'language', section: null, label: 'Язык', icon: LanguageIcon },
+  { id: 'settings', section: null, label: 'Настройки', icon: SettingsIcon },
+];
+
+function isDrawerScreen(section: NavSection) {
+  return section === 'discipline' || section === 'wheel' || section === 'ttk';
+}
+
+const Layout: React.FC<LayoutProps> = ({ activeSection, onNavigate, children }) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const showActiveTab = !isDrawerScreen(activeSection) && activeSection !== 'more' && activeSection !== 'skills' && activeSection !== 'training' && activeSection !== 'journal' && activeSection !== 'certification' && activeSection !== 'admin';
+
+  const getActiveBottomId = () => {
+    if (activeSection === 'path' || activeSection === 'home' || activeSection === 'academy') return 'path';
+    if (activeSection === 'library' || activeSection === 'trainer' || activeSection === 'practice') return 'library';
+    if (activeSection === 'tests') return 'tests';
+    if (activeSection === 'shift') return 'shift';
+    if (activeSection === 'profile' || activeSection === 'more') return 'profile';
+    return null;
+  };
+
+  const activeBottomId = getActiveBottomId();
 
   return (
-    <div className="bg-[#121212] text-[#E8E6E1] h-screen flex flex-col lg:flex-row overflow-auto">
-      {/* Desktop sidebar */}
-      <aside className="hidden flex-col border-r border-[#3a3a3a] bg-[#121212]/95 backdrop-blur h-screen overflow-y-auto">
-        <div className="p-6 flex flex-col gap-6">
-          <div className="flex items-center gap-3">
-            <BrandLogo size={44} />
-            <span className="font-display text-xl font-bold tracking-tighter">
-              <span className="text-[#EE5A55]">202</span><span className="text-[#FBC85F]">f Academy</span>
-            </span>
-          </div>
-          <nav className="flex-1 flex-col gap-1">
-            {TABS.map((tab) => {
-              const active = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  onClick={() => onNavigate(tab.sections[0])}
-                  className={sidebarButton(active)}
-                >
-                  {ICONS[tab.id]}
-                  <span>{tab.label}</span>
-                </button>
-              );
-            })}
-          </nav>
-          <div className="mt-auto p-4 rounded-3xl border border-[#3a3a3a] bg-[#1a1a1a]">
-            <p className="text-xs text-[#555] mb-2">Синхронизация</p>
-            <div className="flex items-center justify-between gap-3">
-              <ProgressRing value={66} size={44} stroke={5} color="#FBC85F">
-                66%
-              </ProgressRing>
-              <span className="text-xs font-mono2 text-[#FBC85F]">synced</span>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      {/* Mobile header */}
-      <header className="sticky top-0 z-40 bg-[#121212]/90 backdrop-blur-md border-b border-[#3a3a3a]">
-        <div className="flex items-center justify-between px-4 py-3.5">
-          <button type="button" aria-label="Меню" onClick={() => onNavigate('more')} style={{ width: 44, height: 44, borderRadius: 22, border: '1px solid #3a3a3a', background: '#1e1e1e', color: '#E8E6E1', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10" /></svg>
+    <div className="bg-bg text-white min-h-screen">
+      {/* Header */}
+      <header
+        className="sticky top-0 z-40 bg-bg"
+        style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 12px)' }}
+      >
+        <div className="flex items-center justify-between px-5 h-[48px]">
+          <button
+            type="button"
+            aria-label="Меню"
+            onClick={() => setDrawerOpen(true)}
+            className="w-10 h-10 rounded-full bg-surface-dark border border-border-dark-1 flex items-center justify-center text-white"
+          >
+            <MenuIcon />
           </button>
-          <div className="font-display font-extrabold text-[17px] tracking-normal">
-            <span className="text-[#FBC85F]">202F</span> ACADEMY
-          </div>
-          <button type="button" aria-label="Профиль" onClick={() => onNavigate('profile')} style={{ width: 44, height: 44, borderRadius: 22, border: 0, background: '#5B45F0', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4" /><path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg>
+          <button
+            type="button"
+            onClick={() => onNavigate('path')}
+            className="flex items-center gap-2"
+            aria-label="На главную"
+          >
+            <img src="/logo-202.png" alt="202" style={{ width: 34, height: 34, borderRadius: 10 }} />
+            <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+              <span style={{ color: '#FDC55E' }}>202F</span> <span style={{ color: '#FFFFFF' }}>ACADEMY</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            aria-label="Профиль"
+            onClick={() => onNavigate('profile')}
+            className="w-10 h-10 rounded-full bg-violet flex items-center justify-center text-white"
+          >
+            <UserIcon />
           </button>
         </div>
       </header>
 
-      <main className="flex-1 pb-20 overflow-y-auto">
-        {children}
+      {/* Main content */}
+      <main
+        className="px-5"
+        style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 120px)', minHeight: 'calc(100vh - 60px)' }}
+      >
+        <div className="mx-auto w-full max-w-[480px]">
+          {children}
+        </div>
       </main>
 
-      {/* Bottom nav (floating pill) */}
-      <nav aria-label="Основная навигация" className="fixed bottom-0 left-0 right-0 z-50 px-5 pb-5 pointer-events-none">
-        <div className="mx-auto max-w-md pointer-events-auto" style={{ height: 68, borderRadius: 34, background: '#E8E6E1', display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '0 8px', boxShadow: '0 8px 24px rgba(0,0,0,.5)' }}>
-          {BOTTOM_TABS.map((tab) => {
-            const active = activeTab === tab.id;
+      {/* Bottom Nav */}
+      <nav
+        aria-label="Основная навигация"
+        className="fixed left-5 right-5 z-50 pointer-events-none"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}
+      >
+        <div
+          className="mx-auto max-w-[440px] pointer-events-auto h-16 bg-[#E8E6DF] flex items-center justify-around"
+          style={{ borderRadius: 32, padding: '0 8px' }}
+        >
+          {bottomNavItems.map((item) => {
+            const active = showActiveTab && activeBottomId === item.id;
+            const Icon = item.icon;
             return (
               <button
-                key={tab.id}
+                key={item.id}
                 type="button"
-                aria-label={tab.label}
+                aria-label={item.label}
                 aria-current={active ? 'page' : undefined}
-                onClick={() => onNavigate(tab.section)}
+                onClick={() => onNavigate(item.section)}
+                className="flex items-center justify-center transition-transform"
                 style={{
-                  width: 52,
-                  height: 52,
-                  borderRadius: 26,
-                  border: 0,
-                  background: active ? '#121212' : 'transparent',
-                  color: active ? '#C9DB8A' : '#121212',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  cursor: 'pointer',
+                  width: 48,
+                  height: 48,
+                  borderRadius: 9999,
+                  background: active ? '#111111' : 'transparent',
+                  color: active ? '#C9D98A' : '#111111',
+                  transform: active ? 'scale(1)' : 'scale(1)',
                 }}
+                onMouseDown={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.96)'; }}
+                onMouseUp={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)'; setTimeout(() => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }, 120); }}
+                onTouchStart={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(0.96)'; }}
+                onTouchEnd={(e) => { (e.currentTarget as HTMLElement).style.transform = 'scale(1.03)'; setTimeout(() => { (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }, 120); }}
               >
-                {ICONS[tab.id]}
+                <Icon />
               </button>
             );
           })}
         </div>
       </nav>
+
+      {/* Drawer */}
+      {drawerOpen && (
+        <div className="fixed inset-0 z-[60]">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setDrawerOpen(false)}
+            aria-hidden="true"
+          />
+          <aside
+            className="absolute left-0 top-0 h-full w-[300px] bg-[#E8E6DF] flex flex-col"
+            style={{ borderRadius: '0 32px 32px 0' }}
+          >
+            <div className="flex items-center justify-between px-5 pt-6 pb-4">
+              <div className="flex items-center gap-2">
+                <img src="/logo-202.png" alt="202" style={{ width: 44, height: 44, borderRadius: 10 }} />
+                <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 16, textTransform: 'uppercase' }}>
+                  <span style={{ color: '#5B3FF0' }}>202F</span> <span style={{ color: '#111111' }}>ACADEMY</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                aria-label="Закрыть меню"
+                onClick={() => setDrawerOpen(false)}
+                className="w-10 h-10 rounded-full bg-[#111111]/5 border border-[#CFCCC4] flex items-center justify-center text-[#111111]"
+              >
+                <CloseIcon />
+              </button>
+            </div>
+            <nav className="flex-1">
+              {DRAWER_ITEMS.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => {
+                      if (item.section) {
+                        onNavigate(item.section);
+                      }
+                      setDrawerOpen(false);
+                    }}
+                    className="w-full flex items-center gap-3 px-5 h-14"
+                    style={{ borderTop: idx === 0 ? 'none' : '1px solid #CFCCC4', color: '#111111' }}
+                  >
+                    <div className="w-9 h-9 rounded-full bg-[#C9D98A] flex items-center justify-center text-[#111111]">
+                      <Icon />
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: 14, textTransform: 'uppercase' }}>{item.label}</span>
+                    <div className="ml-auto">
+                      <ChevronRightIcon />
+                    </div>
+                  </button>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
     </div>
   );
 };

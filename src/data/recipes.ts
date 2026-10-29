@@ -207,6 +207,300 @@ export const recipes: Recipe[] = [
     method: { ru: 'Смешать ингредиенты со льдом', en: 'Mix ingredients with ice' },
     steps: { ru: ['Холодный фильтр в стакан', 'Добавить лимон и сироп', 'Лёд, перемешать'], en: ['Cold filter in glass', 'Add lemon and syrup', 'Ice, stir'] },
   },
+
+  {
+      "id": "doppio",
+      "name": "Доппио",
+      "category": "espresso",
+      "recipe": {
+          "ru": "18 г кофе → 60 мл",
+          "en": "18 g coffee → 60 ml"
+      },
+      "taste": {
+          "ru": "Мощный, насыщенный",
+          "en": "Strong, intense"
+      },
+      "method": {
+          "ru": "Двойной шот",
+          "en": "Double shot"
+      },
+      "steps": {
+          "ru": [
+              "Прогреть посуду",
+              "Смолоть 18 г",
+              "Дистрибьют и темпинг",
+              "Экстракция 25–30 с"
+          ],
+          "en": [
+              "Preheat",
+              "Grind 18 g",
+              "Distribute & tamp",
+              "Extract 25-30 s"
+          ]
+      }
+  },
+
+  {
+      "id": "macchiato",
+      "name": "Маккиато",
+      "category": "milk",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + молочная пена 10 мл",
+          "en": "Espresso 30 ml + milk foam 10 ml"
+      },
+      "taste": {
+          "ru": "Кофейный, с лёгкой пенкой",
+          "en": "Coffee-forward with foam"
+      },
+      "method": {
+          "ru": "Шот + капля пены",
+          "en": "Shot + dot of foam"
+      },
+      "steps": {
+          "ru": [
+              "Сделать эспрессо",
+              "Добавить немного молочной пены"
+          ],
+          "en": [
+              "Pull espresso",
+              "Add small amount of foam"
+          ]
+      }
+  },
+
+  {
+      "id": "cortado",
+      "name": "Кортадо",
+      "category": "milk",
+      "recipe": {
+          "ru": "Двойной эспрессо 60 мл + тёплое молоко 60 мл",
+          "en": "Double espresso 60 ml + warm milk 60 ml"
+      },
+      "taste": {
+          "ru": "Сбалансированный, мягкий",
+          "en": "Balanced, smooth"
+      },
+      "method": {
+          "ru": "Равные пропорции",
+          "en": "Equal parts"
+      },
+      "steps": {
+          "ru": [
+              "Сделать двойной эспрессо",
+              "Смешать с тёплым молоком"
+          ],
+          "en": [
+              "Pull double espresso",
+              "Mix with warm milk"
+          ]
+      }
+  },
+
+  {
+      "id": "flat-white",
+      "name": "Флэт Уайт",
+      "category": "milk",
+      "recipe": {
+          "ru": "Двойной ристретто/эспрессо 60 мл + микропена 120 мл",
+          "en": "Double ristretto/espresso 60 ml + microfoam 120 ml"
+      },
+      "taste": {
+          "ru": "Кофейный, шелковистый",
+          "en": "Coffee-forward, velvety"
+      },
+      "method": {
+          "ru": "Мелкопузырчатая пена, минимальный слой",
+          "en": "Microfoam, thin layer"
+      },
+      "steps": {
+          "ru": [
+              "Сделать двойной шот",
+              "Взбить молоко с микропеной",
+              "Аккуратно влить"
+          ],
+          "en": [
+              "Pull double shot",
+              "Steam milk to microfoam",
+              "Pour carefully"
+          ]
+      }
+  },
+
+  {
+      "id": "cappuccino",
+      "name": "Капучино",
+      "category": "milk",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + молоко 60 мл + пена 60 мл",
+          "en": "Espresso 30 ml + milk 60 ml + foam 60 ml"
+      },
+      "taste": {
+          "ru": "Сбалансированный, пенный",
+          "en": "Balanced, foamy"
+      },
+      "method": {
+          "ru": "Классика 1:1:1",
+          "en": "Classic 1:1:1"
+      },
+      "steps": {
+          "ru": [
+              "Сделать эспрессо",
+              "Взбить молоко",
+              "Слоями собрать напиток"
+          ],
+          "en": [
+              "Pull espresso",
+              "Steam milk",
+              "Layer components"
+          ]
+      }
+  },
+
+  {
+      "id": "latte",
+      "name": "Латте",
+      "category": "milk",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + молоко 180 мл + пена 10 мл",
+          "en": "Espresso 30 ml + milk 180 ml + foam 10 ml"
+      },
+      "taste": {
+          "ru": "Мягкий, молочный",
+          "en": "Mild, milky"
+      },
+      "method": {
+          "ru": "Больше молока, меньше пены",
+          "en": "More milk, less foam"
+      },
+      "steps": {
+          "ru": [
+              "Сделать эспрессо",
+              "Взбить молоко",
+              "Аккуратно влить, создать рисунок"
+          ],
+          "en": [
+              "Pull espresso",
+              "Steam milk",
+              "Pour to create latte art"
+          ]
+      }
+  },
+
+  {
+      "id": "raf",
+      "name": "Раф",
+      "category": "signature",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + сливки 15 мл + ванильный сироп 15 мл",
+          "en": "Espresso 30 ml + cream 15 ml + vanilla syrup 15 ml"
+      },
+      "taste": {
+          "ru": "Сладкий, сливочный",
+          "en": "Sweet, creamy"
+      },
+      "method": {
+          "ru": "Взбить с паром",
+          "en": "Steam together"
+      },
+      "steps": {
+          "ru": [
+              "Смешать эспрессо, сироп и сливки",
+              "Взбить паром",
+              "Подавать горячим"
+          ],
+          "en": [
+              "Mix espresso, syrup, cream",
+              "Steam",
+              "Serve hot"
+          ]
+      }
+  },
+
+  {
+      "id": "mocha",
+      "name": "Мокка",
+      "category": "milk",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + шоколадный сироп 20 мл + молоко 150 мл",
+          "en": "Espresso 30 ml + chocolate syrup 20 ml + milk 150 ml"
+      },
+      "taste": {
+          "ru": "Шоколадный, кофейный",
+          "en": "Chocolatey, coffee-forward"
+      },
+      "method": {
+          "ru": "Смешать шоколад с эспрессо",
+          "en": "Mix chocolate with espresso"
+      },
+      "steps": {
+          "ru": [
+              "Добавить шоколад в чашку",
+              "Сделать эспрессо и перемешать",
+              "Долить молоко"
+          ],
+          "en": [
+              "Add chocolate to cup",
+              "Pull espresso and stir",
+              "Top with steamed milk"
+          ]
+      }
+  },
+
+  {
+      "id": "con-panna",
+      "name": "Кон Панна",
+      "category": "espresso",
+      "recipe": {
+          "ru": "Эспрессо 30 мл + взбитые сливки",
+          "en": "Espresso 30 ml + whipped cream"
+      },
+      "taste": {
+          "ru": "Насыщенный, сливочный",
+          "en": "Rich, creamy"
+      },
+      "method": {
+          "ru": "Классика",
+          "en": "Classic"
+      },
+      "steps": {
+          "ru": [
+              "Сделать эспрессо",
+              "Украсить взбитыми сливками"
+          ],
+          "en": [
+              "Pull espresso",
+              "Top with whipped cream"
+          ]
+      }
+  },
+
+  {
+      "id": "affogato",
+      "name": "Аффогато",
+      "category": "cold",
+      "recipe": {
+          "ru": "Мороженое 1 шарик + горячий эспрессо 30 мл",
+          "en": "Ice cream 1 scoop + hot espresso 30 ml"
+      },
+      "taste": {
+          "ru": "Десертный, контрастный",
+          "en": "Dessert-like, contrasting"
+      },
+      "method": {
+          "ru": "Залить горячим шотом",
+          "en": "Pour hot shot over ice cream"
+      },
+      "steps": {
+          "ru": [
+              "Положить мороженое в бокал",
+              "Залить горячим эспрессо"
+          ],
+          "en": [
+              "Scoop ice cream into glass",
+              "Pour hot espresso over"
+          ]
+      }
+  },
 ];
 
 console.log(`Recipes loaded: ${recipes.length}`);
